@@ -14,13 +14,13 @@
 (function(factory){
     if(!window || typeof window !== 'object'){
         // non-browser
-        console.log('Supports browser env only.');
+        console.log('<LocalLogger> Supports browser env only.');
         return ;
     }
 
     if(!window.localStorage || typeof window.localStorage !== 'object'){
         // not supports localStorage
-        console.log('Browser does not support localStorage.');
+        console.log('<LocalLogger> Browser does not support localStorage.');
         return ;
     }
 
@@ -135,7 +135,7 @@
     function clean(name, now, days){
         var length = window.localStorage.length;
         if(typeof days !== 'number' || days <= 0){
-            throw new Error('Invalid arguments of \'clean\' method.');
+            console.error('<LocalLogger> Invalid arguments of \'clean\' method.');
             return;
         }
         for(var tmp, key, i=length-1; i>=0; i--){

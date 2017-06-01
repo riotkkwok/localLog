@@ -50,32 +50,57 @@
             key = this.getConfig('key');
         }
         val = escape(val.toString());
-        var exist = this.read(key) ? this.read(key)+';' : '';
+        var exist = this.read(false, key) ? this.read(false, key)+';' : '';
         var ts = this.getConfig('timestamp') ? '['+(new Date).toTimeString().split(' ')[0]+']' : '';
         window.localStorage.setItem(key, exist+ts+val);
     };
-    logger.prototype.read = function(key){
+    logger.prototype.read = function(isGetPrev, key){
         if(key === undefined){
             key = this.getConfig('key');
         }
-        return window.localStorage.getItem(key);
-    };
-    logger.prototype.readAsList = function(key){
-        var tmp, time, result = this.read(key);
-        result = result.split(';');
-        for(var i=0; i<result.length; i++){
-            time = result[i].match(/^\[[0-9]+\:[0-9]+\:[0-9]+\]/g);
-            if(time instanceof Array){
-                tmp = result[i].replace(time[0], '');
-                time = time[0].replace(/\[|\]/g, '');
-            }else{
-                tmp = result[i];
-                time = null;
+        if(!!isGetPrev){
+            key = this.getConfig('name');
+            var vals = [],
+                re = new RegExp('^'+key+'__'+'[0-9]{8}'+'$');
+            for(var i=0; i<window.localStorage.length; i++){
+                if(re.test(window.localStorage.key(i))){
+                    vals.push({
+                        date: window.localStorage.key(i).replace(key+'__', ''),
+                        log: window.localStorage.getItem(window.localStorage.key(i))
+                    });
+                }
             }
-            result[i] = {
-                time: time,
-                val: unescape(tmp)
-            };
+            return vals;
+        }else{
+            return window.localStorage.getItem(key);
+        }
+    };
+    logger.prototype.readAsList = function(isGetPrev, key){
+        var tmp, time, result = this.read(isGetPrev, key);
+        if(!isGetPrev){
+            result = [{
+                log: result
+            }];
+        }
+        for(var i=0; i<result.length; i++){
+            result[i].log = result[i].log.split(';');
+            for(var j=0; j<result[i].log.length; j++){
+                time = result[i].log[j].match(/^\[[0-9]+\:[0-9]+\:[0-9]+\]/g);
+                if(time instanceof Array){
+                    tmp = result[i].log[j].replace(time[0], '');
+                    time = time[0].replace(/\[|\]/g, '');
+                }else{
+                    tmp = result[i].log[j];
+                    time = null;
+                }
+                result[i].log[j] = {
+                    time: time,
+                    val: unescape(tmp)
+                };
+            }
+        }
+        if(!isGetPrev){
+            result = result[0].log;
         }
         return result;
     };
@@ -92,7 +117,7 @@
 
         conf.name = opt.name || 'LocalLogger';
 
-        conf.key = conf.name + conf.today;
+        conf.key = conf.name + '__' + conf.today;
 
         conf.timestamp = !!opt.timestamp;
 
@@ -116,7 +141,7 @@
         }
         for(var tmp, key, i=length-1; i>=0; i--){
             key = window.localStorage.key(i);
-            if((new RegExp('^'+name+'[0-9]{8}$')).test(key)){
+            if((new RegExp('^'+name+'__'+'[0-9]{8}$')).test(key)){
                 tmp = new Date(now);
                 tmp.setDate(tmp.getDate()-days);
                 if(name + dateString(tmp) > key){

@@ -20,13 +20,27 @@ Support UMD
     });
 ```
 
- ### API
+### API
  
- * write([key,] val)
+#### write([key,] val)
+Marks the string as log to localStorage.
+
+* key - the specified key to store, if not specify the string, uses the auto-generated name when logger was inited.
+* val - the value to store
  
- * read([key])
+#### read(isGetPrev, [key])
+Returns the value(s) stored in localStorage in string format.
+
+* isGetPrev - to get previous log or not
+* key - the specified key to get, if not specify the string, uses the auto-generated name when logger was inited.
  
- * readAsList([key])
+#### readAsList(isGetPrev, [key])
+Returns the value(s) stored in localStorage in array list format.
+
+* isGetPrev - to get previous log or not
+* key - the specified key to get, if not specify the string, uses the auto-generated name when logger was inited.
  
- * clean(daysBefore)
- 
+#### clean(daysBefore)
+Cleans the log(s) which was stored (n) days before
+
+* daysBefore - the specified days before today

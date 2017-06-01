@@ -51,7 +51,7 @@
         }
         val = escape(val.toString());
         var exist = this.read(key) ? this.read(key)+';' : '';
-        var ts = this.getConfig('timestamp') ? '['+(new Date).toTimeString().split(' ')[0]+'] ' : '';
+        var ts = this.getConfig('timestamp') ? '['+(new Date).toTimeString().split(' ')[0]+']' : '';
         window.localStorage.setItem(key, exist+ts+val);
     };
     logger.prototype.read = function(key){
@@ -66,7 +66,7 @@
         for(var i=0; i<result.length; i++){
             time = result[i].match(/^\[[0-9]+\:[0-9]+\:[0-9]+\]/g);
             if(time instanceof Array){
-                tmp = result[i].replace(time[0]+' ', '');
+                tmp = result[i].replace(time[0], '');
                 time = time[0].replace(/\[|\]/g, '');
             }else{
                 tmp = result[i];

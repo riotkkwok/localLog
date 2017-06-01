@@ -60,10 +60,9 @@
         }
         if(!!isGetPrev){
             key = this.getConfig('name');
-            var vals = [],
-                re = new RegExp('^'+key+'__'+'[0-9]{8}'+'$');
+            var vals = [];
             for(var i=0; i<window.localStorage.length; i++){
-                if(re.test(window.localStorage.key(i))){
+                if(matchKey(key, window.localStorage.key(i))){
                     vals.push({
                         date: window.localStorage.key(i).replace(key+'__', ''),
                         log: window.localStorage.getItem(window.localStorage.key(i))
@@ -141,7 +140,7 @@
         }
         for(var tmp, key, i=length-1; i>=0; i--){
             key = window.localStorage.key(i);
-            if((new RegExp('^'+name+'__'+'[0-9]{8}$')).test(key)){
+            if(matchKey(name, key)){
                 tmp = new Date(now);
                 tmp.setDate(tmp.getDate()-days);
                 if(name + dateString(tmp) > key){
@@ -149,7 +148,10 @@
                 }
             }
         }
+    }
 
+    function matchKey(name, key){
+        return (new RegExp('^'+name+'__'+'[0-9]{8}$')).test(key);
     }
 
     return logger;

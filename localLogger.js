@@ -143,7 +143,7 @@
             if(matchKey(name, key)){
                 tmp = new Date(now);
                 tmp.setDate(tmp.getDate()-days);
-                if(name + dateString(tmp) > key){
+                if(name + '__' +dateString(tmp) > key){
                     window.localStorage.removeItem(key);
                 }
             }

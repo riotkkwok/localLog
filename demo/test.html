@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>test local logger</title>
+    <style type="text/css">
+    body{
+        font-size: 14px;
+        line-height: 16px;
+    }
+    label{
+        display: inline-block;
+        width: 140px;
+    }
+    section{
+        padding: 10px 0;
+    }
+    #btn, #btn2, #btn3, #btn4{
+        display: inline-block;
+        padding: 5px;
+        border: 1px solid #aaaaaa;
+        border-radius: 3px;
+    }
+    .ui-input{
+        height: 22px;
+    }
+    div.box{
+        font-size: 20px;
+        font-weight: bold;
+        padding: 10px;
+    }
+    p{
+        font-size: 12px;
+        font-weight: normal;
+    }
+    p.date{
+        font-size: 14px;
+        text-align: center;
+        background-color: #ffdd00;
+    }
+    </style>
+</head>
+<body>
+    <section>
+        <label>log without timestamp:</label>
+        <input id="info" class="ui-input" type="text" maxLength="10"></input>
+        <div id="btn">Log it</div>
+    </section>
+
+    <section>
+        <label>log with timestamp:</label>
+        <input id="info2" class="ui-input" type="text" maxLength="10"></input>
+        <div id="btn2">Log it</div>
+    </section>
+
+    <section>
+        <div id="btn3">Show All Log</div>
+        <div id="logArea"></div>
+    </section>
+
+    <section>
+        <div id="btn4">Show Today's Log</div>
+        <div id="logArea2"></div>
+    </section>
+
+    <script type="text/javascript" src="../localLogger.js"></script>
+    <script type="text/javascript">
+    var logger = new window.LocalLogger({
+        name: 'TestLogger',
+        timestamp: false,
+        maxDays: 2
+    });
+    var logger2 = new window.LocalLogger({
+        name: 'TestLogger2',
+        timestamp: true,
+        maxDays: 2
+    });
+    var pvLog = new window.LocalLogger({
+        name: 'PV_Logger',
+        timestamp: true,
+        maxDays: 4
+    });
+    pvLog.write('visited');
+    document.querySelector('#btn').addEventListener('click', function(){
+        logger.write(document.querySelector('#info').value);
+        document.querySelector('#info').value = '';
+    });
+    document.querySelector('#btn2').addEventListener('click', function(){
+        logger2.write(document.querySelector('#info2').value);
+        document.querySelector('#info2').value = '';
+    });
+    document.querySelector('#btn3').addEventListener('click', function(){
+        document.querySelector('#logArea').innerHTML = '';
+
+        var i, j, box, tmp, o1;
+
+        o1 = logger.readAsList(true);
+        box = document.createElement('div');
+        box.classList.add('box');
+        box.innerText = 'TestLogger';
+        for(i=0; i<o1.length; i++){
+            tmp = document.createElement('p');
+            tmp.classList.add('date');
+            if(!!o1[i].date){
+                tmp.innerText += o1[i].date+': ';
+            }
+            box.append(tmp);
+            for(j=0; j<o1[i].log.length; j++){
+                tmp = document.createElement('p');
+                if(!!o1[i].log[j].time){
+                    tmp.innerText += o1[i].log[j].time+': ';
+                }
+                tmp.innerText += o1[i].log[j].val;
+                box.append(tmp);
+            }
+        }
+        document.querySelector('#logArea').append(box);
+
+        o1 = logger2.readAsList(true);
+        box = document.createElement('div');
+        box.classList.add('box');
+        box.innerText = 'TestLogger2';
+        for(i=0; i<o1.length; i++){
+            tmp = document.createElement('p');
+            tmp.classList.add('date');
+            if(!!o1[i].date){
+                tmp.innerText += o1[i].date+': ';
+            }
+            box.append(tmp);
+            for(j=0; j<o1[i].log.length; j++){
+                tmp = document.createElement('p');
+                if(!!o1[i].log[j].time){
+                    tmp.innerText += o1[i].log[j].time+': ';
+                }
+                tmp.innerText += o1[i].log[j].val;
+                box.append(tmp);
+            }
+        }
+        document.querySelector('#logArea').append(box);
+
+        o1 = pvLog.readAsList(true);
+        box = document.createElement('div');
+        box.classList.add('box');
+        box.innerText = 'PV_Logger';
+        for(i=0; i<o1.length; i++){
+            tmp = document.createElement('p');
+            tmp.classList.add('date');
+            if(!!o1[i].date){
+                tmp.innerText += o1[i].date+': ';
+            }
+            box.append(tmp);
+            for(j=0; j<o1[i].log.length; j++){
+                tmp = document.createElement('p');
+                if(!!o1[i].log[j].time){
+                    tmp.innerText += o1[i].log[j].time+': ';
+                }
+                tmp.innerText += o1[i].log[j].val;
+                box.append(tmp);
+            }
+        }
+        document.querySelector('#logArea').append(box);
+    });
+    document.querySelector('#btn4').addEventListener('click', function(){
+        document.querySelector('#logArea2').innerHTML = '';
+
+        var i, box, tmp, o1;
+
+        o1 = logger.readAsList(false);
+        box = document.createElement('div');
+        box.classList.add('box');
+        box.innerText = 'TestLogger';
+        for(i=0; i<o1.length; i++){
+            tmp = document.createElement('p');
+            if(!!o1[i].time){
+                tmp.innerText += o1[i].time+': ';
+            }
+            tmp.innerText += o1[i].val;
+            box.append(tmp);
+        }
+        document.querySelector('#logArea2').append(box);
+
+        o1 = logger2.readAsList(false);
+        box = document.createElement('div');
+        box.classList.add('box');
+        box.innerText = 'TestLogger2';
+        for(i=0; i<o1.length; i++){
+            tmp = document.createElement('p');
+            if(!!o1[i].time){
+                tmp.innerText += o1[i].time+': ';
+            }
+            tmp.innerText += o1[i].val;
+            box.append(tmp);
+        }
+        document.querySelector('#logArea2').append(box);
+
+        o1 = pvLog.readAsList(false);
+        box = document.createElement('div');
+        box.classList.add('box');
+        box.innerText = 'PV_Logger';
+        for(i=0; i<o1.length; i++){
+            tmp = document.createElement('p');
+            if(!!o1[i].time){
+                tmp.innerText += o1[i].time+': ';
+            }
+            tmp.innerText += o1[i].val;
+            box.append(tmp);
+        }
+        document.querySelector('#logArea2').append(box);
+    });
+    </script>
+</body>
+</html>
